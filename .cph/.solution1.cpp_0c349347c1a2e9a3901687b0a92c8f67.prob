@@ -1,0 +1,1 @@
+{"name":"Local: solution1","url":"c:\\Users\\Raunil Singh\\CodesFolder\\solution1.cpp","tests":[{"id":1743399435108,"input":"1\n8 50\n176 79 34 60 92 11 41 114\n","output":"204\n7 3 6 4 2 5 8 1"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\Raunil Singh\\CodesFolder\\solution1.cpp","group":"local","local":true}

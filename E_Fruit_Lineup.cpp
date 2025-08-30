@@ -1,0 +1,90 @@
+// ╔═══════════════════╗
+// ║   By _Trefoil_    ║
+// ╚═══════════════════╝
+
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace __gnu_pbds;
+using namespace std;
+
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update> // @Nilayan17
+// order_of_key (k) : Number of items strictly smaller than k .
+// find_by_order(k) : K-th element in a set (counting from zero).
+// use less_equal for multiple entries
+
+#define int long long
+#define ll long long // upto 9.2 * (10^18)
+#define ull unsigned long long // upto 1.8 * (10^19)
+#define pb(x) push_back(x)
+#define ppb(x) pop_back(x)
+#define F first
+#define S second
+#define inp(v) for(auto &temporary_variable : v) cin >> temporary_variable
+#define all(x) x.begin(), x.end()
+#define mpr(x, y) make_pair(x, y)
+
+const long double eps = 1e-12;
+
+// -std=c++17 -O2 -DLOCAL_PROJECT -Wshadow -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -fsanitize=address -fsanitize=undefined
+
+#define MOD 998244353
+
+int inv_for_nCr(int a, int m) { // m = MOD
+    return a <= 1 ? a : m - (long long)(m/a) * inv_for_nCr(m % a, m) % m;
+}
+
+vector<int> factorial;
+vector<int> inverse_factorial;
+
+void precompute_for_nCr(int x) // call this to get precompute
+{
+    factorial.resize(x+1);
+    inverse_factorial.resize(x+1);
+
+    factorial[0] = 1;
+    inverse_factorial[0] = inv_for_nCr(1, MOD);
+    for(int i = 1 ; i<=x ; i++)
+    {
+        factorial[i] = (factorial[i-1]*i) % MOD;
+        inverse_factorial[i] = (inverse_factorial[i-1]*inv_for_nCr(i, MOD)) % MOD;
+    }
+}
+
+int nCr(int n, int r)
+{
+    return (factorial[n] * ((inverse_factorial[r]*inverse_factorial[n-r]) % MOD)) % MOD;
+}
+
+signed main()
+{
+    // ios::sync_with_stdio(false);
+    // cin.tie(nullptr);
+
+    // freopen("input.txt", "r", stdin);
+    // freopen("output.txt", "w", stdout);
+
+    // cout << fixed;
+    cout << setprecision(10);
+
+    precompute_for_nCr(3000000);
+
+    int a, b, c, d;
+    cin >> a >> b >> c >> d;
+
+    int ans = 0;
+
+    int prev = 0;
+
+    for(int i = 0 ; i<=c ; i++)
+    {
+        // cout << i << "\n";
+        int curr = nCr(d+i, d);
+        // cout << i << "#\n";
+        ans = (ans + ((curr - prev + MOD)*nCr(a+b+c-i, b) % MOD)) % MOD;
+        prev = curr;
+        // cout << i << "##\n";
+    }
+    cout << ans << "\n";
+    
+    return 0;
+}
