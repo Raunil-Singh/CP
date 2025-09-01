@@ -1,73 +1,39 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define ll long long // upto 9.2 * (10^18)
-#define ull unsigned long long // upto 1.8 * (10^19)
+#define int long long
 
-ll find_seg_size(ll n)
-{
-    ll res = 1;
-    while(res <= n) res *= 2;
-    return res - 1;
+vector<int> seg(400000);
+int build(const vector<int> &v, int l, int r, int node) {
+    if(l == r) return 0;
+    if(r-l == 1) return seg[node] = v[l];
+    return seg[node] = build(v, l, (l+r)/2, node*2) + build(v, (l+r)/2, r, node*2 + 1);
 }
 
-ll populate(vector<ll> &v, ll ind)
-{
-    if(ind>=v.size())
-        return 0;
-
-    v[ind] += populate(v, 2*ind+1) + populate(v, 2*ind + 2);
-    return v[ind];
+int sett(int i, int num, int l, int r, int node) {
+    if(l >= r) return 0;
+    if(l == i && r == i+1) return seg[node] = num;
+    if(r <= i || i < l) return seg[node];
+    return seg[node] = sett(i, num, l, (l+r)/2, node*2) + sett(i, num, (l+r)/2, r, node*2+1);
 }
 
-void update(vector<ll> &v, ll ind, ll val)
-{
-    v[ind] = val;
-    while(ind>0)
-    {
-        ind = (ind-1)/2;
-        v[ind] = v[2*ind+1] + v[2*ind+2];
-    }
+int sum(int l, int r, int L, int R, int node) {
+    if(R <= l || r <= L || R <= L) return 0;
+    if(l <= L && R <= r) return seg[node];
+    return sum(l, r, L, (L+R)/2, node*2) + sum(l, r, (L+R)/2, R, node*2 + 1);
 }
 
-ll range_sum(vector<ll> &v, ll ind, ll tarl, ll tarr, ll ranl, ll ranr) // tarl, tarl -> target range; ranl, ranr -> node range
-{
-    if(tarl>ranr || ranl>tarr) return 0;
-    if(tarl <= ranl && ranr <= tarr) return v[ind];
-    return range_sum(v, 2*ind+1, tarl, tarr, ranl, (ranl+ranr)/2) + range_sum(v, 2*ind+2, tarl, tarr, (ranl+ranr)/2 + 1, ranr); 
-}
-
-int main()
-{
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
-	cout.tie(nullptr);
-
-	// For IO in txt file
-    // freopen("input.txt", "r", stdin);
-    // freopen("output.txt", "w", stdout);
-
-	ll n, m;
+signed main() {
+    int n, m;
     cin >> n >> m;
-
-    ll seg_size = find_seg_size(n);
-
-    vector<ll> v(2*seg_size+1, 0);
-    for(int i = 0 ; i<n ; i++) cin >> v[i + seg_size];
-    
-    populate(v, 0);
-
-    for(ll i = 0 ; i<m ; i++)
-    {
-        ll state, l, r;
-        cin >> state >> l >> r;
-        
-        if(state == 1)
-            update(v, l + (seg_size), r);
-        else if(state == 2)
-            cout << range_sum(v, 0, l, r-1, 0, seg_size) << "\n";
+    vector<int> a(n);
+    for(int &num : a) cin >> num;
+    build(a, 0, n, 1);
+    while(m--) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        if(a == 1) sett(b, c, 0, n, 1);
+        else cout << sum(b, c, 0, n, 1) << "\n";
     }
-
-
-	return 0;
+    return 0;
 }
