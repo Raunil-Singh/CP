@@ -108,5 +108,6 @@
         "markdown": false,
         "scminput": false
     },
-    "C_Cpp.errorSquiggles": "enabled"
+    "C_Cpp.errorSquiggles": "enabled",
+    "cmake.sourceDirectory": "/home/raunil-singh/Github_repos/CP/dbg-macro"
 }

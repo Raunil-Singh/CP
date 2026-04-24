@@ -1,39 +1,94 @@
-// ╔═══════════════════╗
-// ║   By _Trefoil_    ║
-// ╚═══════════════════╝
-
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 using namespace __gnu_pbds;
 using namespace std;
 
-#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update> // @Nilayan17
+#ifdef BG // use flag -DBG when compiling to enable
+#include <dbg.h>
+#else
+#define dbg(x, ...) ;
+#endif
+
+template <typename T>
+using ordered_set =
+    tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 // order_of_key (k) : Number of items strictly smaller than k .
 // find_by_order(k) : K-th element in a set (counting from zero).
+// use less_equal for multiple entries
 
-#define int long long
-#define ll long long // upto 9.2 * (10^18)
-#define ull unsigned long long // upto 1.8 * (10^19)
-#define pb(x) push_back(x)
-#define ppb(x) pop_back(x)
-#define F first
-#define S second
+#define int int64_t // upto 9.2 * (10^18)
+#define uint uint64_t // upto 1.8 * (10^19)
 #define inp(v) for(auto &temporary_variable : v) cin >> temporary_variable
 #define all(x) x.begin(), x.end()
 #define mpr(x, y) make_pair(x, y)
 
-void solve(ll tc_no)
-{
-    
-    // code here
-    
+mt19937_64 RNG(chrono::steady_clock::now().time_since_epoch().count());
+
+const long double eps = 1e-12;
+#define MOD
+
+void preprocessing() {
+
+    // Code here
+
 }
 
-signed main()
-{
+void solve(int tc_no) {
+    
+    // cout << "Case #" << tc_no << ": ";
+    int n;
+    cin >> n;
+
+    int before = 0;
+    int after = INT_MIN;
+    int during = INT_MIN;
+    int curr_num;
+    int nbefore{}, nduring{}, nafter{};
+    
+    for(int i = 0 ; i<n ; i++) {
+        cin >> curr_num;
+
+        // Process before
+        if(before < curr_num) nbefore = before+1;
+        else if(before > curr_num) nbefore = before-1;
+        else nbefore = before;
+
+        // Process during
+        nduring = max(during, before);
+
+        // Process after -> after
+        if(after < curr_num) nafter = after+1;
+        else if(after > curr_num) nafter = after-1;
+        else nafter = after;
+
+        // process during -> after
+        if(during < curr_num) nafter = max(nafter, during+1);
+        else if(during > curr_num) nafter = max(nafter, during-1);
+        else nafter = max(nafter, during);
+
+        before = nbefore;
+        during = nduring;
+        after = nafter;
+    }
+
+    int ans = max(during, after);
+
+    cout << ans << "\n";
+
+}
+// Note: Ensure all template parameters are update!
+
+/****              Algorithm keypoints:
+    here:
+    
+    
+    
+****/
+
+int32_t main() {
+    auto begin = std::chrono::high_resolution_clock::now();
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    cout.tie(nullptr);
 
     // freopen("input.txt", "r", stdin);
     // freopen("output.txt", "w", stdout);
@@ -41,10 +96,24 @@ signed main()
     // cout << fixed;
     cout << setprecision(10);
 
-    ll t;
-    cin >> t;
-    for(ll i = 1 ; i<=t ; i++)
+    preprocessing();
+
+    int t{1};
+    cin >> t; // Update me!
+    for(int i{1} ; i<=t ; i++)
         solve(i);
 
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    // cerr << "Time measured: " << elapsed.count() * 1e-9 << " seconds.\n"; 
     return 0;
 }
+
+
+// ======= CHECKLIST =======
+// Notebook  : 
+// Using it? : 
+// Sol Proof : 
+// algo noted: 
+// Update the number of testcases: 
+// Start coding ;)

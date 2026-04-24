@@ -1,39 +1,69 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define int long long
+#define int int64_t
 
-vector<int> seg(400000);
-int build(const vector<int> &v, int l, int r, int node) {
-    if(l == r) return 0;
-    if(r-l == 1) return seg[node] = v[l];
-    return seg[node] = build(v, l, (l+r)/2, node*2) + build(v, (l+r)/2, r, node*2 + 1);
-}
+class segment_tree {
 
-int sett(int i, int num, int l, int r, int node) {
-    if(l >= r) return 0;
-    if(l == i && r == i+1) return seg[node] = num;
-    if(r <= i || i < l) return seg[node];
-    return seg[node] = sett(i, num, l, (l+r)/2, node*2) + sett(i, num, (l+r)/2, r, node*2+1);
-}
+    int sze;
+    vector<int> seg;
 
-int sum(int l, int r, int L, int R, int node) {
-    if(R <= l || r <= L || R <= L) return 0;
-    if(l <= L && R <= r) return seg[node];
-    return sum(l, r, L, (L+R)/2, node*2) + sum(l, r, (L+R)/2, R, node*2 + 1);
-}
+    int default_val;
+    int rule(const int &a, const int &b) { return a+b; }
 
-signed main() {
+    int build(vector<int> &v, int curr, int l, int r) {
+        if(l == r) return seg[curr] = v[l];
+        int mid = (l+r)/2;
+        return seg[curr] = rule(build(v, curr*2, l, mid), build(v, curr*2+1, mid+1, r));
+    }
+
+    int update_(int ind, int val, int curr, int l, int r) {
+        if(ind < l || r < ind) return seg[curr];
+        if(l == r) return seg[curr] = val;
+        int mid = (l+r)/2;
+        return seg[curr] = rule(update_(ind, val, curr*2, l, mid), update_(ind, val, curr*2+1, mid+1, r));
+    }
+
+    int query_(int l, int r, int curr, int L, int R) {
+        if(r < L || R < l) return default_val;
+        if(l <= L && R <= r) return seg[curr];
+        int MID = (L+R)/2;
+        return rule(query_(l, r, curr*2, L, MID), query_(l, r, curr*2+1, MID+1, R));
+    }
+
+public:
+
+    segment_tree(vector<int>&v) : sze(v.size()), seg(4*v.size()), default_val(0) {
+        build(v, 1, 0, sze-1);
+    }
+
+    int update(int ind, int val) {
+        return update_(ind, val, 1, 0, sze-1);
+    }
+
+    int query(int l, int r) {
+        return query_(l, r, 1, 0, sze-1);
+    }
+
+};
+
+int32_t main() {
+
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
     int n, m;
     cin >> n >> m;
-    vector<int> a(n);
-    for(int &num : a) cin >> num;
-    build(a, 0, n, 1);
-    while(m--) {
+    vector<int> v(n); for(int &num : v) cin >> num;
+    segment_tree seg(v);
+ 
+    for(int i = 0 ; i<m ; i++) {
         int a, b, c;
         cin >> a >> b >> c;
-        if(a == 1) sett(b, c, 0, n, 1);
-        else cout << sum(b, c, 0, n, 1) << "\n";
+        if(a == 1) seg.update(b, c);
+        else cout << seg.query(b, c-1) << "\n";
     }
+
     return 0;
+
 }
